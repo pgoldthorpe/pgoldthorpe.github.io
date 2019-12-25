@@ -10,4 +10,37 @@
   }
   </style>
 <script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="brush.js"></script>
+<script>
+  // http://bl.ocks.org/ludwigschubert/0236fa8594c4b02711b2606a8f95f605
+
+svg = d3.select('body').append('svg')
+    .attr('height', 400)
+    .attr('width', 600)
+
+brush = d3.brush()
+    .extent([[0, 0], [600, 400]])
+    // .on('start brush', brushed)
+    .on('end', brushended)
+
+xscale = d3.scaleLinear().domain([0, 30]).range([0, 599])
+yscale = d3.scaleLinear().domain([0, 20]).range([0, 399])
+xaxis = d3.axisBottom().scale(xscale).ticks(30).tickSize(400)
+yaxis = d3.axisRight().scale(yscale).ticks(20).tickSize(600)
+
+svg.append('g').call(xaxis)
+svg.append('g').call(yaxis)
+svg.call(brush)
+svg.call(brush.move, [[240,40], [360,240]]) // Initial location of brush
+
+function brushended() {
+    const selection = d3.event.selection;
+    if (!d3.event.sourceEvent || !selection) return;
+    d3.select(this).transition().call(brush.move, // [[x0,y0],[x1,y1]]
+        [selection[0].map(d=>Math.round(d / 20) * 20),
+        selection[1].map(d=>Math.round(d / 20) * 20)]);
+}
+function brushed() {
+    console.log( d3.event.selection );
+    // console.log(d3.mouse(this))
+  }
+</script>
