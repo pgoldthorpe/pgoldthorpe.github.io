@@ -1,0 +1,112 @@
+<!-- https://codepen.io/sfearl1/pen/gRayJE -->
+<title>OLS</title>
+<body></body>
+<style>
+  svg {
+      border:blue;
+      border-style: solid;
+      border-width: 0.5px;
+  }
+</style>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+var width = 600
+var height = 400
+var radius = 5
+
+const svg = d3.select('body').append('svg')
+    .attr('viewBox', [0, 0, width, height])
+    .attr('stroke-width', 1)
+    .on('click', addCircle)
+
+function addCircle(d) {
+  svg.append('circle')
+    .attr('cx', (d) => d3.mouse(this)[0])
+    .attr('cy', (d) => d3.mouse(this)[1])
+    .attr('r', radius)
+    .attr('fill','black')
+    .call(drag)
+    .on('click', clicked)
+}
+
+var drag = d3.drag()
+  .on('start', dragstarted)
+  .on('drag', dragged)
+  .on('end', dragended)
+
+  function clicked(d) {
+    d3.event.stopPropagation(); // stop click event for svg if circle click
+    if (d3.event.defaultPrevented) return; // dragged
+    if (d3.event.ctrlKey) {
+      d3.select(this).transition()
+        .attr('r', 0)
+        .remove()
+      return
+      }
+
+    d3.select(this).transition('first')
+        .attr("r", radius * 2)
+        .attr("fill", 'rgb(100,160,40)')
+      .transition('second')
+        .attr("r", radius);
+        
+  }
+
+function dragstarted(d) {
+  d3.select(this).attr("stroke", "black");
+}
+
+function dragged(d) {
+    d3.select(this).raise()
+    .attr("cx", Math.min(600-radius, Math.max(0+radius, d3.event.x)))
+    .attr("cy", Math.min(400-radius, Math.max(0+radius, d3.event.y)));
+  }
+
+function dragended(d) {
+  d3.select(this).attr("stroke", null);
+}
+</script>
+
+<script>
+function OLS(values_x, values_y) {
+      // Calculate m and b for the formula: y = m * x + b
+
+    var sum_x = 0;
+    var sum_y = 0;
+    var sum_xy = 0;
+    var sum_xx = 0;
+    var count = 0;
+
+    /*
+     * We'll use those variables for faster read/write access.
+     */
+    var x = 0;
+    var y = 0;
+    var values_length = values_x.length;
+
+    if (values_length != values_y.length) {
+        throw new Error('The parameters values_x and values_y need to have same size!');
+    }
+
+    if (values_length === 0) {
+        return [null, null];
+    }
+
+    /*
+     * Calculate the sum for each of the parts necessary.
+     */
+    for (var v = 0; v < values_length; v++) {
+        x = values_x[v];
+        y = values_y[v];
+        sum_x += x;
+        sum_y += y;
+        sum_xx += x*x
+        sum_xy += x*y;
+        count++;
+    }
+
+    var m = (count*sum_xy - sum_x*sum_y) / (count*sum_xx - sum_x*sum_x);
+    var b = (sum_y/count) - (m*sum_x)/count;
+    return [m, b]
+}
+</script>
