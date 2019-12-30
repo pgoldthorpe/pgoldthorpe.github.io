@@ -7,26 +7,76 @@
       border-style: solid;
       border-width: 0.5px;
   }
+  .tick {
+    pointer-events: none;
+    -webkit-user-select: none; /* Safari 3.1+ */
+    -moz-user-select: none; /* Firefox 2+ */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Standard syntax */
+  }
 </style>
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script>
 var width = 600
 var height = 400
-var radius = 5
+var margins = {'top':50, 'bottom':50, 'left':50, 'right':50}
+var radius = 3
+
+var x_scale = d3.scaleLinear().domain([0, 20]).range([0, width - margins.left - margins.right])
+var y_scale = d3.scaleLinear().domain([-10, 10]).range([height - margins.top - margins.bottom, 0])
+var x_axis = d3.axisBottom().scale(x_scale)
+var y_axis = d3.axisLeft().scale(y_scale)
 
 const svg = d3.select('body').append('svg')
     .attr('viewBox', [0, 0, width, height])
     .attr('stroke-width', 1)
     .on('click', addCircle)
 
+var g = svg.append('g')
+  .attr('height', height - margins.top - margins.bottom)
+  .attr('width', width - margins.left - margins.right)
+  .attr('transform', 'translate('+[margins.left, margins.top]+')')
+  .attr('class', 'chart')
+svg.append('g').call(x_axis)
+  .attr('transform', 'translate('+[margins.left, (height + margins.top - margins.bottom)/2]+')')
+svg.append('g').call(y_axis)
+  .attr('transform', 'translate('+[margins.left, margins.top]+')')
+d3.select('.chart').append('path').attr('class','line')
+
+d3.select('body').append('button')
+  .attr('type','button')
+  .on('click', () => {d3.selectAll('circle').remove(); d3.select('.line').attr('stroke', null)})
+  .text('clear')
+  
+  
+
 function addCircle(d) {
   svg.append('circle')
     .attr('cx', (d) => d3.mouse(this)[0])
     .attr('cy', (d) => d3.mouse(this)[1])
-    .attr('r', radius)
-    .attr('fill','black')
+    .attr('r', ()=> {updateLine(); return radius}) // what a hack
+    .attr('fill', 'red')
+    .attr('opacity', 0.6)
     .call(drag)
     .on('click', clicked)
+}
+
+function updateLine() {
+  var x_values = d3.selectAll('circle').nodes().map((d) => x_scale.invert(d.cx.baseVal.value - 50));
+  var y_values = d3.selectAll('circle').nodes().map((d) => y_scale.invert(d.cy.baseVal.value - 50));
+  var values = OLS(x_values, y_values);
+  var linepoints = [values[0], values[0] + 20*values[1]]
+
+  var line = d3.line()
+    .x((d,i) => 20*x_scale(i))
+    .y((d) => y_scale(d))
+
+  svg.select('.line').datum(linepoints)
+    .join(
+      enter => enter.append('path'),
+      update => update.attr('stroke','blue').attr('d', line),
+      exit => exit.remove()
+    )
 }
 
 var drag = d3.drag()
@@ -38,16 +88,16 @@ var drag = d3.drag()
     d3.event.stopPropagation(); // stop click event for svg if circle click
     if (d3.event.defaultPrevented) return; // dragged
     if (d3.event.ctrlKey) {
-      d3.select(this).transition()
-        .attr('r', 0)
-        .remove()
-      return
+      d3.select(this).remove();
+      updateLine();
+      return;
       }
-
-    d3.select(this).transition('first')
+    
+    return;
+    d3.select(this).transition()
         .attr("r", radius * 2)
         .attr("fill", 'rgb(100,160,40)')
-      .transition('second')
+      .transition()
         .attr("r", radius);
         
   }
@@ -59,15 +109,16 @@ function dragstarted(d) {
 function dragged(d) {
     d3.select(this).raise()
     .attr("cx", Math.min(600-radius, Math.max(0+radius, d3.event.x)))
-    .attr("cy", Math.min(400-radius, Math.max(0+radius, d3.event.y)));
+    .attr("cy", Math.min(400-radius, Math.max(0+radius, d3.event.y)))
+    updateLine();
   }
 
 function dragended(d) {
   d3.select(this).attr("stroke", null);
 }
 </script>
-
 <script>
+
 function OLS(values_x, values_y) {
       // Calculate m and b for the formula: y = m * x + b
 
@@ -106,7 +157,7 @@ function OLS(values_x, values_y) {
     }
 
     var m = (count*sum_xy - sum_x*sum_y) / (count*sum_xx - sum_x*sum_x);
-    var b = (sum_y/count) - (m*sum_x)/count;
-    return [m, b]
+    var b = sum_y/count - m * sum_x/count;
+    return [b, m]
 }
 </script>
