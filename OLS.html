@@ -21,9 +21,11 @@ var width = 600
 var height = 400
 var margins = {'top':50, 'bottom':50, 'left':50, 'right':50}
 var radius = 3
+var scale = 20;
 
-var x_scale = d3.scaleLinear().domain([0, 20]).range([0, width - margins.left - margins.right])
-var y_scale = d3.scaleLinear().domain([-10, 10]).range([height - margins.top - margins.bottom, 0])
+// Coordinate space
+var x_scale = d3.scaleLinear().domain([0, scale]).range([0, width - margins.left - margins.right])
+var y_scale = d3.scaleLinear().domain([-scale/2, scale/2]).range([height - margins.top - margins.bottom, 0])
 var x_axis = d3.axisBottom().scale(x_scale)
 var y_axis = d3.axisLeft().scale(y_scale)
 
@@ -41,15 +43,42 @@ svg.append('g').call(x_axis)
   .attr('transform', 'translate('+[margins.left, (height + margins.top - margins.bottom)/2]+')')
 svg.append('g').call(y_axis)
   .attr('transform', 'translate('+[margins.left, margins.top]+')')
-d3.select('.chart').append('path').attr('class','line')
+g.append('path').attr('class','line')
 
+
+// Reset button
 d3.select('body').append('button')
   .attr('type','button')
-  .on('click', () => {d3.selectAll('circle').remove(); d3.select('.line').attr('stroke', null)})
+  .on('click', () => {
+    svg.selectAll('circle').remove();
+    d3.select('.line').attr('stroke', null);
+    d3.select('.point').attr('fill', null);
+    })
   .text('clear')
-  
-  
 
+// Parameter space
+var x_scale2 = d3.scaleLinear().domain([-scale/2, scale/2]).range([0, width - margins.left - margins.right])
+var y_scale2 = d3.scaleLinear().domain([-scale/2, scale/2]).range([height - margins.top - margins.bottom, 0])
+var x_axis2 = d3.axisBottom().scale(x_scale2)
+var y_axis2 = d3.axisLeft().scale(y_scale2)
+
+const svg2 = d3.select('body').append('svg')
+  .attr('viewBox', [0, 0, width, height])
+  .attr('stroke-width', 1)
+
+var g2 = svg2.append('g')
+  .attr('height', height - margins.top - margins.bottom)
+  .attr('width', width - margins.left - margins.right)
+  .attr('transform', 'translate('+[margins.left, margins.top]+')')
+  .attr('class', 'chart')
+svg2.append('g').call(x_axis2)
+  .attr('transform', 'translate('+[margins.left, (height + margins.top - margins.bottom)/2]+')')
+svg2.append('g').call(y_axis2)
+  .attr('transform', 'translate('+[(width + margins.left - margins.right)/2, margins.top]+')')
+g2.append('circle').attr('class','point')
+
+
+// FUNCTIONS
 function addCircle(d) {
   svg.append('circle')
     .attr('cx', (d) => d3.mouse(this)[0])
@@ -62,13 +91,13 @@ function addCircle(d) {
 }
 
 function updateLine() {
-  var x_values = d3.selectAll('circle').nodes().map((d) => x_scale.invert(d.cx.baseVal.value - 50));
-  var y_values = d3.selectAll('circle').nodes().map((d) => y_scale.invert(d.cy.baseVal.value - 50));
+  var x_values = svg.selectAll('circle').nodes().map((d) => x_scale.invert(d.cx.baseVal.value - margins.left));
+  var y_values = svg.selectAll('circle').nodes().map((d) => y_scale.invert(d.cy.baseVal.value - margins.top));
   var values = OLS(x_values, y_values);
-  var linepoints = [values[0], values[0] + 20*values[1]]
+  var linepoints = [values[0], values[0] + scale*values[1]]
 
   var line = d3.line()
-    .x((d,i) => 20*x_scale(i))
+    .x((d,i) => scale * x_scale(i))
     .y((d) => y_scale(d))
 
   svg.select('.line').datum(linepoints)
@@ -77,6 +106,16 @@ function updateLine() {
       update => update.attr('stroke','blue').attr('d', line),
       exit => exit.remove()
     )
+
+  svg2.select('.point').datum(linepoints)
+    .join(
+        enter => enter.append('circle'),
+        update => update.attr('fill','steelblue').attr('r', radius)
+          .attr('cx', (d) => x_scale2(d[0]))
+          .attr('cy', (d) => y_scale2(d[1])),
+        exit => exit.remove()
+      )
+
 }
 
 var drag = d3.drag()
