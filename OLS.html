@@ -21,7 +21,7 @@ var width = 600
 var height = 400
 var margins = {'top':50, 'bottom':50, 'left':50, 'right':50}
 var radius = 3
-var scale = 20;
+var scale = 1;
 
 // Coordinate space
 var x_scale = d3.scaleLinear().domain([0, scale]).range([0, width - margins.left - margins.right])
@@ -38,7 +38,6 @@ var g = svg.append('g')
   .attr('height', height - margins.top - margins.bottom)
   .attr('width', width - margins.left - margins.right)
   .attr('transform', 'translate('+[margins.left, margins.top]+')')
-  .attr('class', 'chart')
 svg.append('g').call(x_axis)
   .attr('transform', 'translate('+[margins.left, (height + margins.top - margins.bottom)/2]+')')
 svg.append('g').call(y_axis)
@@ -51,10 +50,21 @@ d3.select('body').append('button')
   .attr('type','button')
   .on('click', () => {
     svg.selectAll('circle').remove();
-    d3.select('.line').attr('stroke', null);
-    d3.select('.point').attr('fill', null);
+    d3.selectAll('.residuals').remove();
+    d3.select('.line').attr('stroke', "none");
+    d3.select('.point').attr('fill', "none");
     })
   .text('clear')
+
+// Text showing residual length
+text = d3.select('body').append('p').text('x')
+
+// Checkbox
+d3.select('body').append('input')
+    .attr('class','residbox')
+    .attr('type', 'checkbox')
+    .on('click', () => d3.select('.residbox').property('checked')===true ?
+    d3.selectAll('.residuals').attr("stroke", "red") : d3.selectAll('.residuals').attr("stroke", "none"))
 
 // Parameter space
 var x_scale2 = d3.scaleLinear().domain([-scale/2, scale/2]).range([0, width - margins.left - margins.right])
@@ -70,7 +80,6 @@ var g2 = svg2.append('g')
   .attr('height', height - margins.top - margins.bottom)
   .attr('width', width - margins.left - margins.right)
   .attr('transform', 'translate('+[margins.left, margins.top]+')')
-  .attr('class', 'chart')
 svg2.append('g').call(x_axis2)
   .attr('transform', 'translate('+[margins.left, (height + margins.top - margins.bottom)/2]+')')
 svg2.append('g').call(y_axis2)
@@ -83,7 +92,7 @@ function addCircle(d) {
   svg.append('circle')
     .attr('cx', (d) => d3.mouse(this)[0])
     .attr('cy', (d) => d3.mouse(this)[1])
-    .attr('r', ()=> {updateLine(); return radius}) // what a hack
+    .attr('r', () => { updateLine(); return radius }) // what a hack
     .attr('fill', 'red')
     .attr('opacity', 0.6)
     .call(drag)
@@ -94,9 +103,10 @@ function updateLine() {
   var x_values = svg.selectAll('circle').nodes().map((d) => x_scale.invert(d.cx.baseVal.value - margins.left));
   var y_values = svg.selectAll('circle').nodes().map((d) => y_scale.invert(d.cy.baseVal.value - margins.top));
   var values = OLS(x_values, y_values);
-  var linepoints = [values[0], values[0] + scale*values[1]]
+  var linepoints = [values[0], values[0] + scale * values[1]]
 
   var line = d3.line()
+    .defined(d => !isNaN(d))
     .x((d,i) => scale * x_scale(i))
     .y((d) => y_scale(d))
 
@@ -109,12 +119,38 @@ function updateLine() {
 
   svg2.select('.point').datum(linepoints)
     .join(
-        enter => enter.append('circle'),
-        update => update.attr('fill','steelblue').attr('r', radius)
+        enter => enter.append('circle').attr('fill','steelblue'),
+        update => update.attr('r', radius)
           .attr('cx', (d) => x_scale2(d[0]))
           .attr('cy', (d) => y_scale2(d[1])),
         exit => exit.remove()
       )
+
+  // Add in residual lines
+  g.selectAll('.residuals').data(x_values)
+    .join(
+      enter => enter.append('line')
+        .attr("stroke-width", 0.5)
+        .attr("stroke", () => d3.select('.residbox').property('checked')===true ? "red" : "none")
+        .attr('stroke-dasharray','5 5')
+        .attr('x1', (d, i) => x_scale(x_values[i]))
+        .attr('x2', (d, i) => x_scale(x_values[i]))
+        .attr('y2', (d, i) => y_scale(y_values[i]))
+        .attr('y1', (d, i) => y_scale(values[0] + x_values[i] * values[1]))
+        .attr('class','residuals'),
+      update => update
+        .attr('x1', (d, i) => x_scale(x_values[i]))
+        .attr('x2', (d, i) => x_scale(x_values[i]))
+        .attr('y2', (d, i) => y_scale(y_values[i]))
+        .attr('y1', (d, i) => y_scale(values[0] + x_values[i] * values[1]))
+        ,// .attr("stroke-width", 0.5)
+        // .attr("stroke", "red")
+        // .attr('stroke-dasharray','5 5'),
+      exit => exit.remove()
+    )
+
+  residualsum = d3.selectAll('.residuals').nodes().map((d)=> d.getTotalLength())
+  text.text(d3.sum(residualsum))
 
 }
 
