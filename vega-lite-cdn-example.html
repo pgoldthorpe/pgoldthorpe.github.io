@@ -6,33 +6,101 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
   </head>
+  <style>
+  canvas {
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    style: "width: 100%; height: 100%;";
+  }
+  </style>
   <body>
     <div id="vis"></div>
 
     <script type="text/javascript">
       var yourVlSpec = {
-        $schema: 'https://vega.github.io/schema/vega-lite/v2.0.json',
-        description: 'A simple bar chart with embedded data.',
-        data: {
-          values: [
-            {a: 'A', b: 28},
-            {a: 'B', b: 55},
-            {a: 'C', b: 43},
-            {a: 'D', b: 91},
-            {a: 'E', b: 81},
-            {a: 'F', b: 53},
-            {a: 'G', b: 19},
-            {a: 'H', b: 87},
-            {a: 'I', b: 52}
-          ]
-        },
-        mark: 'bar',
-        encoding: {
-          x: {field: 'a', type: 'ordinal'},
-          y: {field: 'b', type: 'quantitative'}
-        }
-      };
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "description": "A scatterplot showing Anscombe's quartet.",
+  "data": {
+    "values": [
+  {"index":1, "group":"I", "x":10.0, "y":8.04},
+  {"index":2, "group":"I", "x":8.0, "y":6.95},
+  {"index":3, "group":"I", "x":13.0, "y":7.58},
+  {"index":4, "group":"I", "x":9.0, "y":8.81},
+  {"index":5, "group":"I", "x":11.0, "y":8.33},
+  {"index":6, "group":"I", "x":14.0, "y":9.96},
+  {"index":7, "group":"I", "x":6.0, "y":7.24},
+  {"index":8, "group":"I", "x":4.0, "y":4.26},
+  {"index":9, "group":"I", "x":12.0, "y":10.84},
+  {"index":10, "group":"I", "x":7.0, "y":4.81},
+  {"index":11, "group":"I", "x":5.0, "y":5.68},
+  
+  {"index":1, "group":"II", "x":10.0, "y":9.14},
+  {"index":2, "group":"II", "x":8.0, "y":8.14},
+  {"index":3, "group":"II", "x":13.0, "y":8.74},
+  {"index":4, "group":"II", "x":9.0, "y":8.77},
+  {"index":5, "group":"II", "x":11.0, "y":9.26},
+  {"index":6, "group":"II", "x":14.0, "y":8.10},
+  {"index":7, "group":"II", "x":6.0, "y":6.13},
+  {"index":8, "group":"II", "x":4.0, "y":3.10},
+  {"index":9, "group":"II", "x":12.0, "y":9.13},
+  {"index":10, "group":"II", "x":7.0, "y":7.26},
+  {"index":11, "group":"II", "x":5.0, "y":4.74},
+  
+  {"index":1, "group":"III", "x":10.0, "y":7.46},
+  {"index":2, "group":"III", "x":8.0, "y":6.77},
+  {"index":3, "group":"III", "x":13.0, "y":12.74},
+  {"index":4, "group":"III", "x":9.0, "y":7.11},
+  {"index":5, "group":"III", "x":11.0, "y":7.81},
+  {"index":6, "group":"III", "x":14.0, "y":8.84},
+  {"index":7, "group":"III", "x":6.0, "y":6.08},
+  {"index":8, "group":"III", "x":4.0, "y":5.39},
+  {"index":9, "group":"III", "x":12.0, "y":8.15},
+  {"index":10, "group":"III", "x":7.0, "y":6.42},
+  {"index":11, "group":"III", "x":5.0, "y":5.73},
+  
+  {"index":1, "group":"IV", "x":8.0, "y":6.58},
+  {"index":2, "group":"IV", "x":8.0, "y":5.76},
+  {"index":3, "group":"IV", "x":8.0, "y":7.71},
+  {"index":4, "group":"IV", "x":8.0, "y":8.84},
+  {"index":5, "group":"IV", "x":8.0, "y":8.47},
+  {"index":6, "group":"IV", "x":8.0, "y":7.04},
+  {"index":7, "group":"IV", "x":8.0, "y":5.25},
+  {"index":8, "group":"IV", "x":19.0, "y":12.50},
+  {"index":9, "group":"IV", "x":8.0, "y":5.56},
+  {"index":10, "group":"IV", "x":8.0, "y":7.91},
+  {"index":11, "group":"IV", "x":8.0, "y":6.89}
+]
+  },
+  "mark": {"type":"point"},
+  "encoding": {
+    "color": {"field": "group", "type": "nominal"},
+    "facet": {"field": "group", "type": "nominal", "columns":2},
+    "x": {
+      "field": "x",
+      "type": "quantitative",
+      "scale": {"zero": true}
+    },
+    "y": {
+      "field": "y",
+      "type": "quantitative",
+      "scale": {"zero": true}
+    },
+    "size": {"field": "group", "type":"nominal", "legend":null},
+    "poop": {"field":"index"},
+    "shape": {"field": "group", "type": "nominal"},
+    "opacity": {"value": 1}
+  }
+};
       vegaEmbed('#vis', yourVlSpec);
+    </script>
+    <script>
+    // Set Vega-Lite plot to fullscreen. Used for embedding into iframes.
+    var x = document.getElementById("vis");
+      x.getElementsByTagName("canvas")[0].style.width = "100%"
+      x.getElementsByTagName("canvas")[0].style.height = "100%"
     </script>
   </body>
 </html>
