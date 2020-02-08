@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<div class="container"></div>
+<!-- JavaScript-->
+<script src="http://d3js.org/d3.v5.js"></script>
+<script>
+  var d3container = d3.select('.container'),
+      svg = d3container.append('svg'),
+      dots = svg.append('g');
+  
+  for ( var i = 1; i <= 5; ++i ) {
+    dots.append('text')
+        .text(0)
+        .attr('text-anchor', 'middle')
+        .attr('x', 150)
+        .attr('y', i * 25)
+        .on('mouseenter', function() {
+          d3.select(this)
+            .transition()
+            .tween('text', tweenText(50))
+            .duration(1500);
+        } )
+        .on('mouseleave', function() {
+          d3.select(this)
+            .transition()
+            .tween('text', tweenText(Math.floor(Math.random()*30*i)))
+            .ease(d3.easeBounce)
+            .duration(3000);
+        } )
+        .transition()
+        .delay(300 * i)
+        .tween('text', tweenText(10));
+  }
+ 
+  /**
+   * Helper functions
+   */
+function tweenText(newValue) {
+  return function() {
+    // Keep reference to 'this'
+    // D3 v4 does not keep reference to 'this' in the inner function
+    var node = this
+    var currentValue = +node.textContent
+    var interpolate = d3.interpolateRound(currentValue, newValue);
+    
+    return function(t) {
+      node.textContent = interpolate(t);
+    }
+  }
+}
+</script>

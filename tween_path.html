@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<svg width="960" height="900">
+  <path fill="none" stroke="black" stroke-width="1.5"></path>
+</svg>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script>
+var d0 = "M 305 320 H 400 V 450 H 200 V 400 L 305 320",
+    d1 = "M305.214,374.779c2.463,0,3.45,0.493,3.45,0.493l1.478-6.241c0,0,1.15,4.763,1.643,9.034 c0.493,4.271,8.048,1.479,14.454,0.164c6.405-1.314,7.72-11.662,7.72-11.662h59.294c0,0-35.807,10.841-26.772,34.656 c0,0-52.889-8.048-61.101,24.967h-0.001c-8.212-33.015-61.101-24.967-61.101-24.967c9.034-23.815-26.772-34.656-26.772-34.656 h59.294c0,0,1.314,10.348,7.719,11.662c6.406,1.314,13.962,4.106,14.454-0.164c0.493-4.271,1.643-9.034,1.643-9.034l1.479,6.241 c0,0,0.985-0.493,3.449-0.493H305.214L305.214,374.779z";
+d3.select("path")
+    .attr("d", d0)
+  .transition()
+    .duration(3000)
+    .on("start", function repeat() {
+      d3.active(this)
+          .attrTween("d", pathTween(d1, 4))
+        .transition()
+          .attrTween("d", pathTween(d0, 4))
+        .transition()
+          .on("start", repeat);
+    });
+function pathTween(d1, precision) {
+  return function() {
+    var path0 = this,
+        path1 = path0.cloneNode(),
+        n0 = path0.getTotalLength(),
+        n1 = (path1.setAttribute("d", d1), path1).getTotalLength();
+    // Uniform sampling of distance based on specified precision.
+    var distances = [0], i = 0, dt = precision / Math.max(n0, n1);
+    while ((i += dt) < 1) distances.push(i);
+    distances.push(1);
+    // Compute point-interpolators at each distance.
+    var points = distances.map(function(t) {
+      var p0 = path0.getPointAtLength(t * n0),
+          p1 = path1.getPointAtLength(t * n1);
+      return d3.interpolate([p0.x, p0.y], [p1.x, p1.y]);
+    });
+    return function(t) {
+      return t < 1 ? "M" + points.map(function(p) { return p(t); }).join("L") : d1;
+    };
+  };
+}
+</script>
