@@ -76,3 +76,7 @@ function dbl() {
   update();update();update();update();update();update();update();update();update();update();
   update();update();update();update();update();update();update();update();update();update();
 }
+
+function updatetext() {
+  d3.select('slidertext').text(d3.select('#shift').property('value'))
+}
