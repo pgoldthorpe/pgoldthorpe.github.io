@@ -62,11 +62,14 @@ function update() {
   yval = +d3.select(d3.selectAll('rect')._groups[0][index2]).attr('y')
   fun = window["d3"][d3.select('select').property('value')] //choose the ease
   shift = d3.select('#shift').property('value')
-  d3.select('#grey').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index1]).transition("fill").duration(tt).ease(fun).attr('fill','lightgrey') : null
-  d3.select('#move').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index2]).transition("move").duration(tt).ease(fun).attr('y', yval + shift*Math.sin(rand)).attr('x', xval + shift*Math.cos(rand)) : null
-  d3.select('#shape').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index3]).transition("shape").duration(tt).ease(fun).attr('rx', radius/2) : null
-  // d3.select('#TBD').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index4]).transition("shape").duration(tt).ease(fun).attr('rx', 0) : null
-  d3.select('#red').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index5]).transition("fill").duration(tt).ease(fun).attr('fill', d3.select('#picker').property('value')) : null
+  if (d3.select('#grey').property('checked')) {
+    d3.select(d3.selectAll('rect')._groups[0][index1]).transition("fill").duration(tt).ease(fun).attr('fill','lightgrey')}
+  if (d3.select('#move').property('checked')) {
+    d3.select(d3.selectAll('rect')._groups[0][index2]).transition("move").duration(tt).ease(fun).attr('y', yval + shift*Math.sin(rand)).attr('x', xval + shift*Math.cos(rand))}
+  if (d3.select('#shape').property('checked')) {
+    d3.select(d3.selectAll('rect')._groups[0][index3]).transition("shape").duration(tt).ease(fun).attr('rx', radius/2)}
+  if (d3.select('#red').property('checked')) {
+    d3.select(d3.selectAll('rect')._groups[0][index5]).transition("fill").duration(tt).ease(fun).attr('fill', d3.select('#picker').property('value'))}
 }
 
 function dbl() {
