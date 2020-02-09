@@ -4,32 +4,50 @@ function createMatrix(rows, cols) {
 
 var data = createMatrix(8,8);
 
-var width = 600,
-  height = 600
-  radius = 20;
-  spacing = 30;
+var width = 500,
+  height = 500
+  radius = 40;
+  spacing = 60;
 
-var svg = d3.select('body').append('svg')
+var svg = d3.select('svg')
   .attr('height', height)
   .attr('width', width)
   .append('g')
   .attr('transform', 'translate('+[0, spacing]+')');
+
 
 var row = svg.selectAll('.row').data(data)
 .join(
   enter => enter.append('g')
   .attr('transform', (d,i) => 'translate(' + [spacing/2, i * spacing - 3*spacing/4] + ')')
   )
-  
-row.selectAll('rect')
-  .data(function(d, i) { return data[i]; })
-  .join(enter => enter.append('rect')
-    .attr('x', (d,i) => i * spacing - spacing/4)
-    .attr('width', radius)
-    .attr('height', radius)
-    .attr('rx', 0)
-    .attr('fill','black')
-  )
+
+
+create()
+
+function create() {
+  row.selectAll('rect')
+    .data(function(d, i) { return data[i]; })
+    .join(
+    enter => enter.append('rect')
+      .attr('x', (d,i) => i * spacing - spacing/4)
+      .attr('y', 0)
+      .attr('width', radius)
+      .attr('height', radius)
+      .attr('rx', 0)
+      .attr('fill','black')
+      .attr('transform','rotate(0)'),
+    update => update
+    .transition("move").duration(1000)
+      .attr('x', (d,i) => i * spacing - spacing/4)
+      .attr('y', 0)
+      .attr('width', radius)
+      .attr('height', radius)
+      .attr('rx', 0)
+      .attr('fill','black')
+      .attr('transform','rotate(0)')
+    )
+  }
 
 function update() {
   tt = +d3.select('input').property('value')
@@ -42,13 +60,13 @@ function update() {
   
   xval = +d3.select(d3.selectAll('rect')._groups[0][index2]).attr('x')
   yval = +d3.select(d3.selectAll('rect')._groups[0][index2]).attr('y')
-  fun = window["d3"][d3.select('select').property('value')]
-  d3.select(d3.selectAll('rect')._groups[0][index1]).transition("fill").duration(tt).ease(fun).attr('fill','black') // .transition().duration(12000).ease(d3.easeLinear)
-  // d3.select(d3.selectAll('rect')._groups[0][index2]).transition("move").duration(tt).ease(fun).attr('y', yval + spacing/4).attr('x', xval + spacing/4)
-  d3.select(d3.selectAll('rect')._groups[0][index2]).transition("move").duration(tt).ease(fun).attr('y', yval + Math.sin(rand)*spacing/4).attr('x', xval + Math.cos(rand)*spacing/4)
-  d3.select(d3.selectAll('rect')._groups[0][index3]).transition("shape").duration(tt).ease(fun).attr('rx', 15)
-  d3.select(d3.selectAll('rect')._groups[0][index4]).transition("shape").duration(tt).ease(fun).attr('rx', 0)
-  d3.select(d3.selectAll('rect')._groups[0][index5]).transition("fill").duration(tt).ease(fun).attr('fill', 'red')
+  fun = window["d3"][d3.select('select').property('value')] //choose the ease
+  shift = d3.select('#shift').property('value')
+  d3.select('#grey').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index1]).transition("fill").duration(tt).ease(fun).attr('fill','lightgrey') : null
+  d3.select('#move').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index2]).transition("move").duration(tt).ease(fun).attr('y', yval + shift*Math.sin(rand)).attr('x', xval + shift*Math.cos(rand)) : null
+  d3.select('#shape').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index3]).transition("shape").duration(tt).ease(fun).attr('rx', radius/2) : null
+  // d3.select('#TBD').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index4]).transition("shape").duration(tt).ease(fun).attr('rx', 0) : null
+  d3.select('#red').property('checked') ? d3.select(d3.selectAll('rect')._groups[0][index5]).transition("fill").duration(tt).ease(fun).attr('fill', d3.select('#picker').property('value')) : null
 }
 
 function dbl() {
