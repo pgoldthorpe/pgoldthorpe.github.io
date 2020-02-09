@@ -9,7 +9,7 @@ var width = 500,
   radius = 40;
   spacing = 60;
 
-var svg = d3.select('svg')
+var svg = d3.select('body').select('svg')
   .attr('height', height)
   .attr('width', width)
   .append('g')
