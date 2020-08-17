@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="shape_tween.css">
+<body>
+<script src="//d3js.org/d3.v3.min.js"></script>
+<script>
+
+var width = 960,
+    height = 500;
+
+var projection = d3.geo.albers()
+    .rotate([120, 0])
+    .center([0, 37.7])
+    .scale(2700);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.json("california.json", function(polygon) {
+  var coordinates0 = polygon.coordinates[0].map(projection),
+      coordinates1 = circle(coordinates0),
+      path = svg.append("path"),
+      d0 = "M" + coordinates0.join("L") + "Z",
+      d1 = "M" + coordinates1.join("L") + "Z";
+
+  loop();
+  // svg.append("path").style('opacity', 0.15).attr("d", d0)
+  // svg.append("path").style('opacity', 0.15).attr("d", d1)
+  function loop() {
+    path
+        .attr("d", d0)
+      .transition()
+        .duration(5000)
+        .attr("d", d1)
+      .transition()
+        .delay(5000)
+        .attr("d", d0)
+        .each("end", loop);
+  }
+});
+
+function circle(coordinates) {
+  circle = [];
+  length = 0;
+  lengths = [length];
+  polygon = d3.geom.polygon(coordinates);
+  p0 = coordinates[0];
+  p1 = null;
+  x = 0;
+  y = 0;
+  i = 0;
+  n = coordinates.length;
+
+  // Compute the distances of each coordinate.
+  while (++i < n) {
+    p1 = coordinates[i];
+    x = p1[0] - p0[0];
+    y = p1[1] - p0[1];
+    lengths.push(length += Math.sqrt(x * x + y * y));
+    p0 = p1;
+  }
+
+  area = polygon.area();
+  radius = Math.sqrt(Math.abs(area) / Math.PI);
+  centroid = polygon.centroid();
+  angleOffset = -Math.PI / 2; // TODO compute automatically
+  angle = null;
+  i = -1;
+  k = 2 * Math.PI / lengths[lengths.length - 1];
+
+  // Compute points along the circle’s circumference at equivalent distances.
+  while (++i < n) {
+    angle = angleOffset + lengths[i] * k;
+    circle.push([
+      centroid[0] + radius * Math.cos(angle),
+      centroid[1] + radius * Math.sin(angle)
+    ]);
+    // svg.append('circle')
+    // .attr('cx',circle[i][0])
+    // .attr('cy',circle[i][1])
+    // .attr('r',1)
+    // svg.append('circle')
+    // .attr('cx',polygon[i][0])
+    // .attr('cy',polygon[i][1])
+    // .attr('r',1)
+  }
+
+  // d3.select('body').append('input').attr('type','range').attr('min',0).attr('max',1039).attr('value',0).on('input', update)
+  // d3.select('body').append('text').text(0)
+  // d3.select('svg').append('circle').attr('class', 'a').attr('cx', polygon[0][0]).attr('fill','black').attr('cy',polygon[0][1]).attr('r', 3)
+  // d3.select('svg').append('circle').attr('class', 'b').attr('cx', circle[0][0]).attr('fill','red').attr('cy',circle[0][1]).attr('r', 3)
+  // d3.select('svg').append('path').attr('class','conn').attr('d', d3.svg.line()([[polygon[0][0], polygon[0][1]], [circle[0][0], circle[0][1]]]))
+  
+  // function update() {
+  //   val = +d3.select('input').node().value
+  //   d3.select('text').text(val)
+  //   d3.select('.a').attr('cx', polygon[val][0]).attr('cy',polygon[val][1])
+  //   d3.select('.b').attr('cx', circle[val][0]).attr('cy',circle[val][1])
+  //   d3.select('.conn').attr('d', d3.svg.line()([[polygon[val][0], polygon[val][1]], [circle[val][0], circle[val][1]]]))
+  // }
+
+  return circle;
+}
+
+</script>

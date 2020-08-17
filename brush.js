@@ -19,40 +19,6 @@ svg.append('g').call(yaxis)
 svg.call(brush)
 svg.call(brush.move, [[240,40], [360,240]]) // Initial location of brush
 
-line = d3.line().x((d)=>d).y((d)=>d)
-svg.selectAll('path').datum([0, 250])
-  .join(
-      enter => enter.append('path')
-        .attr('d', (d) => line(d)),
-      update => update.attr('d', (d) => line(d)),
-      exit => exit.remove()
-      )
-
-update([
-    {'x':30, 'y':50, 'r':5},
-    {'x':70, 'y':90, 'r':5},
-    {'x':310, 'y':150, 'r':5},
-    {'x':330, 'y':310, 'r':5},
-    {'x':190, 'y':390, 'r':5},
-    {'x':470, 'y':210, 'r':5},
-    {'x':530, 'y':50, 'r':5},
-])
-
-function update(data) {
-    svg.selectAll('circle').data(data)
-    .join(
-        enter => enter.append('circle')
-            .attr('cx', (d) => d.x)
-            .attr('cy', (d) => d.y)
-            .attr('r', (d) => d.r)
-            .style('fill','steelblue'),
-        update => update.transition(1000)
-            .attr('cx', (d) => d.x)
-            .attr('cy', (d) => d.y)
-            .attr('r', (d) => d.r),
-        exit => exit.remove()
-    )
-}
 function brushended() {
     const selection = d3.event.selection;
     if (!d3.event.sourceEvent || !selection) return;

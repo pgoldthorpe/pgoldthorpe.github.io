@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <body>
-  <input type="text" name="object" value="1000">
-  <input type="submit" value="Run" onclick=update()>
+  <input type="number" name="object" value=1000 max=60000 style="width: 8em">
   <select>
     <option value="easeLinear">Linear</option>
     <option value="easeCubic">Cubic</option>
@@ -10,15 +9,20 @@
     <option value="easeElastic">Elastic</option>
     <option value="easeCircleOut">CircleOut</option>
   </select>
+  <input type="submit" value="Run" onclick=update()>
+  <input type="number" id="number" min=1 value=5 max=900 style="width: 4em">
   <input type="submit" value="Reset" onclick=create()>
-  <input type="submit" value="Danger" onclick=dbl()>
+  
+  <input type="number" id="rad-but" min=1 value=10 style="width: 4em">
+  <input type="number" id="spac-but" min=1 value=15 style="width: 4em">
+ 
   <br>
   <svg></svg>
   <br>
-  <input type="checkbox" checked id="move" value="move"><label for="move">Position</label><input type="range" min="0" max="100" value="5" id="shift" oninput=updatetext()><slidertext>5</slidertext><br>
-  <input type="checkbox" id="red" value="red"><label for="red">Colour</label><input id="picker" type="color" value="#e66465"><br>
-  <input type="checkbox" id="shape" value="shape"><label for="shape">Shape</label><br>
-  <input type="checkbox" id="grey" value="grey"><label for="grey">Hue</label><br>
+  <input type="checkbox" style="width:20px; height:20px" checked id="move" value="move"><label for="move">Position</label><input type="range" min="0" max="100" value="5" id="shift" oninput=updatetext()><slidertext>5</slidertext><br>
+  <input type="checkbox" style="width:20px; height:20px" id="red" value="red"><label for="red">Colour</label><input id="picker" type="color" value="#e66465"><br>
+  <input type="checkbox" style="width:20px; height:20px" id="shape" value="shape"><label for="shape">Shape</label><br>
+  <input type="checkbox" style="width:20px; height:20px" id="grey" value="grey"><label for="grey">Hue</label><br>
 </body>
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="encodings.js"></script>

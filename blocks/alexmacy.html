@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  background: #fcfcfa;
+  margin: 0px;
+}
+
+.projection-menu {
+  margin: 10px;
+  width: 25%;
+}
+
+.slider {
+  margin: 10px;
+  width: 40%;
+}
+
+.stroke {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+}
+
+.fill {
+  fill: #fff;
+}
+
+.graticule {
+  fill: none;
+  stroke: #777;
+  stroke-width: .5px;
+  stroke-opacity: .5;
+}
+
+.land {
+  fill: #222;
+}
+
+.boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: .5px;
+}
+
+</style>
+<select id="projection-menu1" class="projection-menu"></select>
+<select id="projection-menu2" class="projection-menu"></select>
+<input type="range" id="slider" class="slider" min="0" max="10000" value="0" oninput="sliderInput()">
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v1.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script>
+
+var width = 960,
+    height = 450;
+
+var options = [
+  {name: "Aitoff", projection: d3.geoAitoff()},
+  {name: "Albers", projection: d3.geoAlbers().parallels([20, 50])},
+  {name: "August", projection: d3.geoAugust()},
+  {name: "Baker", projection: d3.geoBaker()},
+  {name: "Boggs", projection: d3.geoBoggs()},
+  {name: "Bonne", projection: d3.geoBonne()},
+  {name: "Bottomley", projection: d3.geoBottomley()},
+  {name: "Bromley", projection: d3.geoBromley()},
+  {name: "Collignon", projection: d3.geoCollignon()},
+  {name: "Conic Equal Area", projection: d3.geoConicEqualArea()},
+  {name: "Conic Equidistant", projection: d3.geoConicEquidistant()},
+  {name: "Craster Parabolic", projection: d3.geoCraster()},
+  {name: "Cylindrical Equal-Area", projection: d3.geoCylindricalEqualArea()},
+  {name: "Eckert I", projection: d3.geoEckert1()},
+  {name: "Eckert II", projection: d3.geoEckert2()},
+  {name: "Eckert III", projection: d3.geoEckert3()},
+  {name: "Eckert IV", projection: d3.geoEckert4()},
+  {name: "Eckert V", projection: d3.geoEckert5()},
+  {name: "Eckert VI", projection: d3.geoEckert6()},
+  {name: "Eisenlohr", projection: d3.geoEisenlohr()},
+  {name: "Equirectangular (Plate Carrée)", projection: d3.geoEquirectangular()},
+  {name: "Fahey", projection: d3.geoFahey()},
+  {name: "Foucaut", projection: d3.geoFoucaut()},
+  {name: "Gilbert", projection: d3.geoGilbert()},
+  {name: "Ginzburg IX", projection: d3.geoGinzburg9()},
+  {name: "Goode Homolosine", projection: d3.geoHomolosine()},
+  {name: "Gringorten", projection: d3.geoGringorten()},
+  {name: "Guyou", projection: d3.geoGuyou()},
+  {name: "Hammer", projection: d3.geoHammer()},
+  {name: "Hill", projection: d3.geoHill()},
+  {name: "Kavrayskiy VII", projection: d3.geoKavrayskiy7()},
+  {name: "Lambert cylindrical equal-area", projection: d3.geoCylindricalEqualArea()},
+  {name: "Lagrange", projection: d3.geoLagrange()},
+  {name: "Larrivée", projection: d3.geoLarrivee()},
+  {name: "Laskowski", projection: d3.geoLaskowski()},
+  {name: "Loximuthal", projection: d3.geoLoximuthal()},
+  {name: "Miller", projection: d3.geoMiller()},
+  {name: "McBryde–Thomas Flat-Polar Parabolic", projection: d3.geoMtFlatPolarParabolic()},
+  {name: "McBryde–Thomas Flat-Polar Quartic", projection: d3.geoMtFlatPolarQuartic()},
+  {name: "McBryde–Thomas Flat-Polar Sinusoidal", projection: d3.geoMtFlatPolarSinusoidal()},
+  {name: "Mollweide", projection: d3.geoMollweide()},
+  {name: "Natural Earth", projection: d3.geoNaturalEarth()},
+  {name: "Nell–Hammer", projection: d3.geoNellHammer()},
+  {name: "Orthographic", projection: d3.geoOrthographic()},
+  {name: "Patterson", projection: d3.geoPatterson()},
+  {name: "Polyconic", projection: d3.geoPolyconic()},
+  {name: "Rectangular (War Office) Polyconic", projection: d3.geoRectangularPolyconic()},
+  {name: "Robinson", projection: d3.geoRobinson()},
+  {name: "Sinusoidal", projection: d3.geoSinusoidal()},
+  {name: "Sinu-Mollweide", projection: d3.geoSinuMollweide()},
+  {name: "Times", projection: d3.geoTimes()},
+  {name: "van der Grinten", projection: d3.geoVanDerGrinten()},
+  {name: "van der Grinten IV", projection: d3.geoVanDerGrinten4()},
+  {name: "Wagner IV", projection: d3.geoWagner4()},
+  {name: "Wagner VI", projection: d3.geoWagner6()},
+  {name: "Wagner VII", projection: d3.geoWagner7()},
+  {name: "Winkel Tripel", projection: d3.geoWinkel3()}
+];
+
+options.forEach(function(o) {
+   o.projection.rotate([0, 0]).center([0, 0]);
+});
+
+d3.selectAll('.projection-menu')
+    .on('change', projectionMorph)
+  .selectAll("option")
+    .data(options)
+  .enter().append("option")
+    .text(function(d) { return d.name; });
+
+var menu1 = d3.select("#projection-menu1")
+    .property("value", options[Math.floor(Math.random()*options.length)].name);
+
+var menu2 = d3.select("#projection-menu2")
+    .property("value", options[Math.floor(Math.random()*options.length)].name);
+
+var posX = 0, posY = 0;
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .call(d3.drag().on("drag", dragged))
+
+var defs = svg.append("defs")
+
+defs.append("path")
+    .datum({type: "Sphere"})
+    .attr("id", "sphere")
+
+svg.append("use")
+    .attr("class", "stroke")
+    .attr("xlink:href", "#sphere");
+
+svg.append("use")
+    .attr("class", "fill")
+    .attr("xlink:href", "#sphere");
+
+svg.append("path")
+    .datum(d3.geoGraticule())
+    .attr("class", "graticule")
+
+var t = d3.timer(function() {});
+
+d3.json("https://raw.githubusercontent.com/d3/d3.github.com/master/world-110m.v1.json", function(error, world) {
+  if (error) throw error;
+
+  svg.insert("path", ".graticule")
+      .datum(topojson.feature(world, world.objects.land))
+      .attr("class", "land")
+
+  t.restart(function(elapsed) {
+    document.getElementById('slider').value = elapsed * 2
+    projectionMorph()
+    if (elapsed > 5000) t.stop()
+  }, 100)
+});
+
+function sliderInput() {
+  t.stop();
+  projectionMorph();
+}
+
+function dragged() {
+  posX = (posX + d3.event.dx/4) % 360
+  posY = (posY - d3.event.dy/4) % 360
+  projectionMorph()
+}
+
+function projectionMorph() {
+  var t = d3.select('#slider').property('value')/10000;
+
+  var projections = [menu1, menu2].map(function(p) {
+    return options.filter(function(d) {
+      return d.name == p.property('value')
+    })[0].projection
+  });
+
+  svg.selectAll("path")
+      .attr("d", getProjection)
+
+  function getProjection(d) {
+    var projection = d3.geoProjection(project)
+        .rotate([posX, posY])
+        .fitExtent([[10, 10], [width - 10, height - 10]], {
+          type: "Sphere"
+        });
+
+    var path = d3.geoPath(projection);
+
+    function project(λ, φ) {
+      λ *= 180 / Math.PI, 
+      φ *= 180 / Math.PI;
+
+      var p0 = projections[0]([λ, φ]), 
+          p1 = projections[1]([λ, φ]);
+
+      return [
+        (1 - t) * p0[0] + t * p1[0], 
+        (1 - t) * -p0[1] + t * -p1[1]
+        ];
+    }
+
+    return path(d)
+  }
+
+}
+
+</script>

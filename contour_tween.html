@@ -1,0 +1,131 @@
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<!-- https://observablehq.com/@plmrry/animated-contours -->
+<body></body>
+<script>
+  var width = 820;
+  const data = [];
+  let prevData = data.slice(0);
+
+  const height = width;
+
+  const svg = d3
+    .select('body').append('svg')
+    .attr('height',height)
+    .attr('width',width)
+    .attr("fill", "none")
+    .attr("stroke", "blue")
+    .attr("stroke-linejoin", "round");
+
+  const sigma = width * 0.2;
+  const randomX = d3.randomNormal(width / 2, sigma);
+  const randomY = d3.randomNormal(height / 2, sigma);
+
+  function updateData() {
+    prevData = data.slice(0);
+    for (var i = 0; i < 50; i++) {
+      data[i] = {
+        x: randomX(),
+        y: randomY()
+      };
+    }
+  }
+
+  function updateGraph() {
+    var circles = svg.selectAll("circle").data(data);
+
+    circles
+      .enter()
+      .append("circle")
+      .attr("cx", function(d) {
+        return d.x;
+      })
+      .attr("cy", function(d) {
+        return d.y;
+      })
+      .attr("r", 2)
+      .attr("stroke", "none")
+      .attr("fill", "red");
+
+    circles
+      .transition()
+      .duration(1000)
+      .attr("cx", function(d) {
+        return d.x;
+      })
+      .attr("cy", function(d) {
+        return d.y;
+      });
+
+    // For this to work well, we want to give the contour function a consistent set of thresholds.
+    const thresholds =
+      width < 800
+        ? d3.range(0.005, 0.03, 0.001)
+        : d3.range(0.001, 0.006, 0.0003);
+
+    const contourFunc = d3
+      .contourDensity()
+      .thresholds(thresholds)
+      .x(function(d) {
+        return d.x;
+      })
+      .y(function(d) {
+        return d.y;
+      })
+      .size([width, height])
+      .bandwidth(70);
+
+    // Mark the points as entering or exiting
+    const entering = data.map(d => {
+      return {
+        ...d,
+        type: "entering"
+      };
+    });
+    const exiting = prevData.map(d => {
+      return {
+        ...d,
+        type: "exiting"
+      };
+    });
+
+    // Combine the entering and exiting points
+    const allData = entering.concat(exiting);
+
+    // Start a global transition
+    d3.transition()
+      .duration(1000)
+      .tween("contours", d => {
+        return tweenValue => {
+          const inverse = 1 - tweenValue;
+
+          // Set the weight accessor to return the tween value
+          // Entering points will gradually increase their effect on the contour generator.
+          // Exiting points will gradually decrease their effect on the contour generator.
+          contourFunc.weight(d => {
+            return d.type === "entering" ? tweenValue : inverse;
+          });
+
+          const contours = contourFunc(allData);
+
+          const contourPaths = svg.selectAll("path").data(contours);
+
+          contourPaths.exit().remove();
+
+          contourPaths
+            .enter()
+            .append("path")
+            .style("opacity", 1);
+
+          contourPaths.attr("d", d3.geoPath());
+        };
+      });
+  }
+
+  updateData();
+  updateGraph();
+
+  setInterval(function() {
+    updateData();
+    updateGraph();
+  }, 2000);
+  </script>

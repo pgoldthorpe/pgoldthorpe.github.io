@@ -52,7 +52,8 @@ d3.select('body').append('button')
     svg.selectAll('circle').remove();
     d3.selectAll('.residuals').remove();
     d3.select('.line').attr('stroke', "none");
-    d3.select('.point').attr('fill', "none");
+    // d3.select('.point').attr('fill', "none");
+    updateLine(0)
     })
   .text('clear')
 
@@ -92,18 +93,20 @@ function addCircle(d) {
   svg.append('circle')
     .attr('cx', (d) => d3.mouse(this)[0])
     .attr('cy', (d) => d3.mouse(this)[1])
-    .attr('r', () => { updateLine(); return radius }) // what a hack
+    .attr('r', () => { updateLine(300); return radius }) // what a hack
     .attr('fill', 'red')
     .attr('opacity', 0.6)
     .call(drag)
     .on('click', clicked)
 }
 
-function updateLine() {
+function updateLine(t) {
   var x_values = svg.selectAll('circle').nodes().map((d) => x_scale.invert(d.cx.baseVal.value - margins.left));
   var y_values = svg.selectAll('circle').nodes().map((d) => y_scale.invert(d.cy.baseVal.value - margins.top));
   var values = OLS(x_values, y_values);
+
   var linepoints = [values[0], values[0] + scale * values[1]]
+  var params = [values[0], values[1]]
 
   var line = d3.line()
     .defined(d => !isNaN(d))
@@ -113,14 +116,16 @@ function updateLine() {
   svg.select('.line').datum(linepoints)
     .join(
       enter => enter.append('path'),
-      update => update.attr('stroke','blue').attr('d', line),
+      update => update.transition().duration(t)
+      .attr('stroke','blue').attr('d', line),
       exit => exit.remove()
     )
 
-  svg2.select('.point').datum(linepoints)
+  svg2.select('.point').datum(params)
     .join(
         enter => enter.append('circle').attr('fill','steelblue'),
-        update => update.attr('r', radius)
+        update => update.transition().duration(t)
+          .attr('r', radius)
           .attr('cx', (d) => x_scale2(d[0]))
           .attr('cy', (d) => y_scale2(d[1])),
         exit => exit.remove()
@@ -132,13 +137,16 @@ function updateLine() {
       enter => enter.append('line')
         .attr("stroke-width", 0.5)
         .attr("stroke", () => d3.select('.residbox').property('checked')===true ? "red" : "none")
-        .attr('stroke-dasharray','5 5')
+        // .attr('stroke-dasharray','5 5')
+        .attr('class','residuals')
         .attr('x1', (d, i) => x_scale(x_values[i]))
         .attr('x2', (d, i) => x_scale(x_values[i]))
         .attr('y2', (d, i) => y_scale(y_values[i]))
-        .attr('y1', (d, i) => y_scale(values[0] + x_values[i] * values[1]))
-        .attr('class','residuals'),
+        .attr('y1', (d, i) => y_scale(y_values[i]))
+        .call(enter => enter.transition().duration(t)
+        .attr('y1', (d, i) => y_scale(values[0] + x_values[i] * values[1]))),
       update => update
+      .transition().duration(t)
         .attr('x1', (d, i) => x_scale(x_values[i]))
         .attr('x2', (d, i) => x_scale(x_values[i]))
         .attr('y2', (d, i) => y_scale(y_values[i]))
@@ -154,28 +162,29 @@ function updateLine() {
 
 }
 
+function clicked(d) {
+  d3.event.stopPropagation(); // stop click event for svg if circle click
+  if (d3.event.defaultPrevented) return; // dragged
+  if (d3.event.ctrlKey) {
+    d3.select(this).remove();
+    updateLine(300);
+    return;
+    }
+  
+  return;
+  d3.select(this).transition()
+      .attr("r", radius * 2)
+      .attr("fill", 'rgb(100,160,40)')
+    .transition()
+      .attr("r", radius);
+      
+}
+// Drag functions
+
 var drag = d3.drag()
   .on('start', dragstarted)
   .on('drag', dragged)
   .on('end', dragended)
-
-  function clicked(d) {
-    d3.event.stopPropagation(); // stop click event for svg if circle click
-    if (d3.event.defaultPrevented) return; // dragged
-    if (d3.event.ctrlKey) {
-      d3.select(this).remove();
-      updateLine();
-      return;
-      }
-    
-    return;
-    d3.select(this).transition()
-        .attr("r", radius * 2)
-        .attr("fill", 'rgb(100,160,40)')
-      .transition()
-        .attr("r", radius);
-        
-  }
 
 function dragstarted(d) {
   d3.select(this).attr("stroke", "black");
@@ -185,7 +194,7 @@ function dragged(d) {
     d3.select(this).raise()
     .attr("cx", Math.min(600-radius, Math.max(0+radius, d3.event.x)))
     .attr("cy", Math.min(400-radius, Math.max(0+radius, d3.event.y)))
-    updateLine();
+    updateLine(0);
   }
 
 function dragended(d) {

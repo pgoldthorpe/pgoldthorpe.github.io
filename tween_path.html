@@ -1,22 +1,128 @@
-<svg width="960" height="900">
-  <path fill="none" stroke="black" stroke-width="1.5"></path>
+<svg width="804" height="600">
+  <g transform="translate(202,80)scale(2)">
+    <path fill="none" stroke="black" stroke-width="1.5"></path>
+  </g>
 </svg>
+<style>
+  body svg{
+    background:rgba(255,255,255,.74);
+    border:solid rgba(255,0,0, 0.74);
+    border-width:0 0 0 1;
+    }
+div.tooltip {	
+  position: absolute;			
+  text-align: center;			
+  width: 100px;					
+  height: 80px;					
+  padding: 2px;				
+  font: 12px sans-serif;		
+  background: lightsteelblue;	
+  border: 0px;		
+  border-radius: 8px;			
+  pointer-events: none;			
+}
+</style>
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script>
-var d0 = "M 305 320 H 400 V 450 H 200 V 400 L 305 320",
-    d1 = "M305.214,374.779c2.463,0,3.45,0.493,3.45,0.493l1.478-6.241c0,0,1.15,4.763,1.643,9.034 c0.493,4.271,8.048,1.479,14.454,0.164c6.405-1.314,7.72-11.662,7.72-11.662h59.294c0,0-35.807,10.841-26.772,34.656 c0,0-52.889-8.048-61.101,24.967h-0.001c-8.212-33.015-61.101-24.967-61.101-24.967c9.034-23.815-26.772-34.656-26.772-34.656 h59.294c0,0,1.314,10.348,7.719,11.662c6.406,1.314,13.962,4.106,14.454-0.164c0.493-4.271,1.643-9.034,1.643-9.034l1.479,6.241 c0,0,0.985-0.493,3.449-0.493H305.214L305.214,374.779z";
-d3.select("path")
+var d0 = "M 0 0 h 100 l -100 51.411 l -100 -51.411z",
+    // d1 = "M305.214,374.779c2.463,0,3.45,0.493,3.45,0.493l1.478-6.241c0,0,1.15,4.763,1.643,9.034 c0.493,4.271,8.048,1.479,14.454,0.164c6.405-1.314,7.72-11.662,7.72-11.662h59.294c0,0-35.807,10.841-26.772,34.656 c0,0-52.889-8.048-61.101,24.967h-0.001c-8.212-33.015-61.101-24.967-61.101-24.967c9.034-23.815-26.772-34.656-26.772-34.656 h59.294c0,0,1.314,10.348,7.719,11.662c6.406,1.314,13.962,4.106,14.454-0.164c0.493-4.271,1.643-9.034,1.643-9.034l1.479,6.241 c0,0,0.985-0.493,3.449-0.493H305.214L305.214,374.779z";
+
+    d1 = "M0,0\
+    c2.463,0,3.45,0.493,3.45,0.493\
+    l1.478,-6.241\
+    c0,0,1.15,4.763,1.643,9.034\
+    \
+    c0.493,4.271,8.048,1.479,14.454,0.164\
+    c6.405-1.314,7.72-11.662,7.72-11.662\
+    h59.294\
+    \
+    c0,0-35.807,10.841-26.772,34.656\
+    c0,0-52.889-8.048-61.101,24.967\
+    \
+    c-8.212-33.015-61.101-24.967-61.101-24.967\
+    c9.034-23.815-26.772-34.656-26.772-34.656\
+    \
+    h59.294\
+    c0,0,1.314,10.348,7.719,11.662\
+    c6.406,1.314,13.962,4.106,14.454-0.164\
+    \
+    c0.493-4.271,1.643-9.034,1.643-9.034\
+    l1.479,6.241\
+    c0,0,0.985-0.493,3.449-0.493\
+    z";
+
+var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
+
+g = d3.select('g');
+
+g.append('circle').attr('cx',0).attr('cy',0).attr('r', 1)
+g.append('circle').attr('cx',100).attr('cy',0).attr('r', 1)
+g.append('circle').attr('cx',0).attr('cy',51.411).attr('r', 1)
+g.append('circle').attr('cx',-100).attr('cy',0).attr('r', 1)
+g.append('circle').attr('cx',0).attr('cy',0).attr('r', 0.8).attr('fill','red')
+g.append('path').attr('d',"M0,0 c2.463,0,3.45,0.493,3.45,0.493").attr('stroke','red').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round')
+g.append('circle').attr('cx',0+3.45).attr('cy',0+0.493).attr('r', 0.8).attr('fill','orange')
+g.append('path').attr('d',"M3.45,0.493 l1.478,-6.241").attr('stroke','orange').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round')
+g.append('circle').attr('cx',0+3.45+1.478).attr('cy',0+0.493-6.241).attr('r', 0.8).attr('fill','gold')
+g.append('path').attr('d',"M4.928-5.748 c0,0,1.15,4.763,1.643,9.034").attr('stroke','gold').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round')
+g.append('circle').attr('cx',0+3.45+1.478+1.643).attr('cy',0+0.493-6.241+9.034).attr('r', 0.8).attr('fill','green')
+g.append('path').attr('d',"M6.571,3.286 c0.493,4.271, 8.048,1.479, 14.454,0.164").attr('stroke','green').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round')
+  .on("mouseover", function(d) {div.transition().duration(200).style("opacity", .9);div.html(d3.select(this).attr('d')).style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on('mousemove', function(d) {div.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on("mouseout", function(d) {div.transition().duration(500).style("opacity", 0);});
+g.append('circle').attr('cx',0+3.45+1.478+1.643+14.454).attr('cy',0+0.493-6.241+9.034+0.164).attr('r', 0.8).attr('fill','turquoise')
+g.append('path').attr('d',"M21.025,3.450 c6.405,-1.314, 7.72,-11.662, 7.72,-11.662").attr('stroke','turquoise').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round')
+  .on("mouseover", function(d) {div.transition().duration(200).style("opacity", .9);div.html(d3.select(this).attr('d')).style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on('mousemove', function(d) {div.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on("mouseout", function(d) {div.transition().duration(500).style("opacity", 0);});
+g.append('circle').attr('cx',0+3.45+1.478+1.643+14.454+7.72).attr('cy',0+0.493-6.241+9.034+0.164-11.662).attr('r', 0.8).attr('fill','blue')
+g.append('path').attr('d',"M28.745,-8.212 h59.294").attr('stroke','blue').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round')
+  .on("mouseover", function(d) {div.transition().duration(200).style("opacity", .9);div.html(d3.select(this).attr('d')).style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on('mousemove', function(d) {div.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on("mouseout", function(d) {div.transition().duration(500).style("opacity", 0);});
+g.append('circle').attr('cx',0+3.45+1.478+1.643+14.454+7.72+59.294).attr('cy',0+0.493-6.241+9.034+0.164-11.662).attr('r', 0.8).attr('fill','purple')
+g.append('path').attr('d',"M88.039,-8.212 c0,0, -35.807,10.841, -26.772,34.656").attr('stroke','purple').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round')
+  .on("mouseover", function(d) {div.transition().duration(200).style("opacity", .9);div.html(d3.select(this).attr('d')).style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on('mousemove', function(d) {div.style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 10) + "px");})
+  .on("mouseout", function(d) {div.transition().duration(500).style("opacity", 0);});
+g.append('circle').attr('cx',0+3.45+1.478+1.643+14.454+7.72+59.294-26.772).attr('cy',0+0.493-6.241+9.034+0.164-11.662+34.656).attr('r', 0.8).attr('fill','violet')
+console.log(g.append('path').attr('d',"M61.267,26.444 c0,0, -52.889,-8.048, -61.101,24.967").attr('stroke','violet').attr('stroke-width',1).attr('fill','none').attr('stroke-linejoin','round').node().getTotalLength())
+g.append('circle').attr('cx',0+3.45+1.478+1.643+14.454+7.72+59.294-26.772-61.101).attr('cy',0+0.493-6.241+9.034+0.164-11.662+34.656+24.967).attr('r', 0.8).attr('fill','grey')
+
+path0 = d3.select("path")
     .attr("d", d0)
+    .attr('stroke-linejoin','round')
+    .attr('stroke-width',0.5)
   .transition()
     .duration(3000)
     .on("start", function repeat() {
       d3.active(this)
-          .attrTween("d", pathTween(d1, 4))
+          .attrTween("d", pathTween(d1, 2))
         .transition()
-          .attrTween("d", pathTween(d0, 4))
+          .attrTween("d", pathTween(d0, 2))
         .transition()
           .on("start", repeat);
-    });
+    })
+
+
+path0 = d3.select("path").attr("d", d0).node()
+path1 = path0.cloneNode()
+n0 = path0.getTotalLength()
+
+function update() {
+  var i;
+  for (i=0; i<=1; i+=0.01) {
+    vals = path0.getPointAtLength(i * path0.getTotalLength())
+    g.append('circle')
+      .attr('r', 1)
+      .attr('cx', vals.x)
+      .attr('cy', vals.y)
+      .attr('fill', 'steelblue')
+  }
+}
+
 function pathTween(d1, precision) {
   return function() {
     var path0 = this,
@@ -34,8 +140,14 @@ function pathTween(d1, precision) {
       return d3.interpolate([p0.x, p0.y], [p1.x, p1.y]);
     });
     return function(t) {
-      return t < 1 ? "M" + points.map(function(p) { return p(t); }).join("L") : d1;
+      // Recreate the path element with piecewise line elements.
+      return t < 1 ? "M" + points.map(function(p) { return p(t); }).join("L") +"z": d1;
     };
   };
+}
+
+function getPoints(percent) {
+  var length = d3.select('path').node().getTotalLength()
+  console.log(d3.select('path').node().getPointAtLength(percent/100*length))
 }
 </script>

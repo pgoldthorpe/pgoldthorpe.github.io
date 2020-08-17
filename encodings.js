@@ -1,22 +1,11 @@
 var data = createMatrix(30, 30);
-
-var width = 500,
-  height = 500
-  radius = 10;
-  spacing = 15;
+var width = 500, height = 500;
 
 var svg = d3.select('body').select('svg')
   .attr('height', height)
   .attr('width', width)
   .append('g')
-  .attr('transform', 'translate('+[0, spacing]+')');
-
-var row = svg.selectAll('.row').data(data)
-.join(
-  enter => enter.append('g')
-  .attr('transform', (d,i) => 'translate(' + [spacing/2, i * spacing - 3*spacing/4] + ')')
-  )
-
+  .attr('transform', 'translate('+[0, +d3.select('#spac-but').property('value')]+')');
 create()
 
 function createMatrix(rows, cols) {
@@ -24,6 +13,16 @@ function createMatrix(rows, cols) {
 }
 
 function create() {
+  // Removing the definitions above and dynamically altering the code results in 
+  var radius = +d3.select('#rad-but').property('value');
+  var spacing = +d3.select('#spac-but').property('value');
+  var row = svg.selectAll('.row').data(data)
+    .join(
+    enter => enter.append('g').attr('class','row')
+      .attr('transform', (d,i) => 'translate(' + [spacing/2, i * spacing - 3*spacing/4] + ')'),
+    update => update.transition().duration(2000)
+      .attr('transform', (d,i) => 'translate(' + [spacing/2, i * spacing - 3*spacing/4] + ')')
+  )
   row.selectAll('rect')
     .data(function(d, i) { return data[i]; })
     .join(
@@ -47,7 +46,9 @@ function create() {
     )
   }
 
-function update(rand=5) {
+function update(rand=+d3.select('#number').property('value')) {
+  var radius = +d3.select('#rad-but').property('value');
+  var spacing = +d3.select('#spac-but').property('value');
   tt = +d3.select('input').property('value')
   easetype = window["d3"][d3.select('select').property('value')]
   
@@ -85,10 +86,6 @@ function update(rand=5) {
       .attr('fill', d3.select('#picker').property('value'))
     }
   }
-
-function dbl() {
-  update(rand=100)
-}
 
 function updatetext() {
   d3.select('slidertext').text(d3.select('#shift').property('value'))
