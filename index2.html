@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
+    <style>
+      table {
+          border-collapse: collapse;
+          border-spacing: 0;
+          width: 100%;
+          border: 1px solid #ddd;
+      }
+      
+      table td + td {
+	        border-left:1px solid #ddd;
+      }
+      
+      th, td {
+          text-align: left;
+          padding: 8px;
+      }
+
+      tr:nth-child(even) {
+          background-color: #f2f2f2
+      }
+
+      tr:hover {
+        background-color: #d0d0d0
+      }
+
+    </style>
+  <body>
+  </head>
+    
+    <h2>Peter's GitHub</h2>
+    <a href="https://raw.githubusercontent.com/pgoldthorpe/adventofcode2019/master/input/input01.txt">test</a>
+    <p>This is a table containing links to work on <a href='https://d3js.org'>D3.js</a></p>
+    <table>
+      <tr>
+        <th>Name</th>
+      </tr>
+      <tr>
+        <td><a href="drag.html" onmouseover="this.style.color='red';" onmouseout="this.style.color='';" rel="nofollow">Drag</a></td>
+      </tr>
+      <tr>
+        <td><a href="brush.html" onmouseover="this.style.color='orange';" onmouseout="this.style.color='';" rel="nofollow">Brush</a></td>
+      </tr>
+      <tr>
+        <td><a href="vanWijk.html" onmouseover="this.style.color='gold';" onmouseout="this.style.color='';" rel="nofollow">VanWijk</a></td>
+      </tr>
+      <tr>
+        <td><a href="vega-lite-cdn-example.html" onmouseover="this.style.color='green';" onmouseout="this.style.color='';" rel="nofollow">vega-lite</a></td>
+      </tr>
+      <tr>
+        <td><a href="encodings.html" onmouseover="this.style.color='steelblue';" onmouseout="this.style.color='';" rel="nofollow">encodings</a></td>
+      </tr>
+      <tr>
+        <td><a href="tween_nums.html" onmouseover="this.style.color='violet';" onmouseout="this.style.color='';" rel="nofollow">tween nums</a></td>
+      </tr>
+      <tr>
+        <td><a href="tween_path.html" onmouseover="this.style.color='black';" onmouseout="this.style.color='';" rel="nofollow">tween path</a></td>
+      </tr>
+    </table>
+  </body>
+</html>
