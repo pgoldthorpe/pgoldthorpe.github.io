@@ -4,7 +4,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>My First Review &mdash; Peter's Blog</title>
+  <title>Creating a github.io pages blog using Pelican &mdash; Peter's Blog</title>
   <meta name="author" content="Peter">
 
 
@@ -42,7 +42,7 @@
         <a href="/category/d3js.html">D3.js</a>
       </li>
       <li class="active">
-        <a href="/category/review.html">Review</a>
+        <a href="/category/static-site.html">Static site</a>
       </li>
 </ul></nav>
   <div id="main">
@@ -50,12 +50,19 @@
 <div>
   <article class="hentry" role="article">
 <header>
-      <h1 class="entry-title">My First Review</h1>
+      <h1 class="entry-title">Creating a github.io pages blog using Pelican</h1>
     <p class="meta">
-<time datetime="2010-12-03T10:20:00+11:00" pubdate>Fri 03 December 2010</time>    </p>
+<time datetime="2020-08-21T23:00:00+10:00" pubdate>Fri 21 August 2020</time>    </p>
 </header>
 
-  <div class="entry-content"><p>Following is a review of my favorite mechanical keyboard.</p></div>
+  <div class="entry-content"><h2>Introduction</h2>
+<p>It seems only fitting that my first post is a meta-post about the creation of the blog.</p>
+<p>I wanted to create a blog. The idea was to have a central repository for my interests and a place to make a protfolio and place my work. To setup this blog I knew a few things.
+1. I wanted to host the blog with GitHub pages
+2. I wanted minimal effort to keep it running
+ I looked at a few static site generators. Gatsby, Hugo, Jekyll, Pelican. Oof. There are so many tools out there and it's easy to get overwhelmed. I learn best from example. One of the major influences was a blog by Jake Vanderplas at <a href="https://http://jakevdp.github.io/">Pythonic Perambulations</a>. If it's good enough for a Software Engineer at Google who taught me Python, it's good enough for me! Pelican is also written in Python which is a language known for its simplicity and accessibility. It also helped that I have Python already installed on my computer.</p>
+<p>I had already setup a github pages on my GitHub account so it would be a simple matter of placing the files in that repo. I created a virtual environment and installed pelican. It was great. <code>pelican-quickstart</code> asked a few questions for creation of the blog and then... it was done.</p>
+<p>The way to make content is by creating new Markdown files in the <code>content</code> folder. To generate the site, it's one simple <code>pelican</code> command in the terminal. This was easier than I expected to get up and running. Now I have no excuses. </p></div>
     <footer>
 <p class="meta">
   <span class="byline author vcard">
@@ -63,9 +70,11 @@
         Peter
     </span>
   </span>
-<time datetime="2010-12-03T10:20:00+11:00" pubdate>Fri 03 December 2010</time>  <span class="categories">
-    <a class='category' href='/category/review.html'>Review</a>
+<time datetime="2020-08-21T23:00:00+10:00" pubdate>Fri 21 August 2020</time>  <span class="categories">
+    <a class='category' href='/category/static-site.html'>static site</a>
   </span>
+  <span class="categories">
+    <a class="category" href="/tag/static-site.html">static site</a>,    <a class="category" href="/tag/pelican.html">Pelican</a>  </span>
 </p><div class="sharing">
 </div>    </footer>
   </article>
@@ -79,7 +88,7 @@
           <a href="/d3-visualizations.html">Interactive webtools using D3.js</a>
       </li>
       <li class="post">
-          <a href="/my-first-review.html">My First Review</a>
+          <a href="/pelican.html">Creating a github.io pages blog using Pelican</a>
       </li>
     </ul>
   </section>
@@ -88,14 +97,14 @@
     <h1>Categories</h1>
     <ul id="recent_posts">
         <li><a href="/category/d3js.html">D3.js</a></li>
-        <li><a href="/category/review.html">Review</a></li>
+        <li><a href="/category/static-site.html">static site</a></li>
     </ul>
   </section>
  
 
   <section>
   <h1>Tags</h1>
-    <a href="/tag/d3.html">D3</a>,    <a href="/tag/visualization.html">visualization</a>  </section>
+    <a href="/tag/d3.html">D3</a>,    <a href="/tag/visualization.html">visualization</a>,    <a href="/tag/static-site.html">static site</a>,    <a href="/tag/pelican.html">Pelican</a>  </section>
 
 
     <section>
@@ -118,7 +127,7 @@
 </aside>    </div>
   </div>
   <footer role="contentinfo"><p>
-    Copyright &copy;  2010&ndash;2020  Peter &mdash;
+    Copyright &copy;  2020  Peter &mdash;
   <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
 </p></footer>
   <script src="/theme/js/modernizr-2.0.js"></script>
