@@ -6,7 +6,7 @@
         <meta name="author" content="Peter">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
-        <title>Peter's Blog - Authors | Peter's Blog</title>
+        <title>Creating a github.io pages blog using Pelican | Peter's Blog</title>
 
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 	<link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -424,10 +424,87 @@ article .meta a.comments_btn:hover {
         </header>
 
         <div id="wrap">
-    <h1>Authors on Peter's Blog</h1>
-    <ul>
-        <li><a href="/author/peter.html">Peter</a> (2)</li>
-    </ul>
+<div class="container post">
+    <article>
+        <header>
+            <h1>Creating a github.io pages blog using Pelican</h1>
+            <time datetime="article.date.isoformat()" pubdate>Fri 21 August 2020</time>
+        </header>
+
+        <div class="article_content">
+            <h2>Introduction</h2>
+<p>It seems only fitting that my first post is a meta-post about the creation of the blog.</p>
+<p>I wanted to create a blog. The idea was to create a portfolio to demonstrate my work, and have a repository for my interests. If the blog was public-facing, then I thought that will be enough encouragement to hold myself accountable to maintaining a higher quality of work. To setup the blog I had two ideas in mind:</p>
+<ol>
+<li>I wanted to host the blog with GitHub pages and have the source code publically facing.</li>
+<li>I wanted minimal effort to keep it running.</li>
+</ol>
+<p>I looked at a few static site generators and spoke with people. I had suggestions for Gatsby, Hugo, Jekyll, Pelican. One thing I discovered quickly: there are many tools available to generate static sites, and it's easy to get overwhelmed. Instead of spending a lot of time choosing a tool, pick one and trial it. Premature optimization is the source of 90% of the world's problems. So I chose Pelican. One of the major influences was a blog by Jake Vanderplas at <a href="https://jakevdp.github.io/">Pythonic Perambulations</a>. If it's good enough for a Software Engineer at Google whose books taught me Python, then it's good enough for me! Pelican is also written in Python which helped because I already had Python already installed on my computer.</p>
+<p>I had already set up a github pages on my GitHub account so I knew it would be a simple matter of placing the site files in that repo. I created a virtual environment and installed pelican using conda. When I ran the setup tool, I was asked a few questions for creation of the blog and then... it was done.</p>
+<p>I downloaded a theme to get the style more unique. It's still on the agenda to adjust things on my own but for now it's great to have working.</p>
+<p>The way to make content is by creating new Markdown files in the content folder. To generate the site, it's one simple <code>pelican</code> command in the terminal. That's it. This builds the website that you're reading now. Overall the process was easier than I expected to get up and running. Now I have no excuses to continue.</p>
+        </div>
+
+        <div class="meta">
+            <div>
+                    <a href="/tag/static-site.html" class="tag">static site</a>
+                    <a href="/tag/pelican.html" class="tag">Pelican</a>
+            </div>
+        </div>
+    </article>
+
+
+</div>
+
+<style type="text/css">
+{
+    max-width: 700px;
+}
+
+.text_cell .prompt {
+    display: none;
+}
+
+div.cell {
+    padding: 0;
+}
+
+div.text_cell_render {
+    padding: 0;
+}
+
+div.prompt {
+    font-size: 13px;
+}
+
+div.input_prompt {
+    padding: .7em 0.2em;
+}
+
+div.output_prompt {
+    padding: .4em .2em;
+}
+
+div.input_area {
+    margin: .2em 0.4em;
+    max-width: 580px;
+}
+
+table.dataframe {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+table.dataframe th, td {
+    padding: 4px;
+    text-align: left;
+}
+
+pre code {
+    background-color: inherit;
+}</style>
+
         </div>
 <!--
     <footer>
